@@ -1,36 +1,107 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FinEdge Academy (MVP v2)
 
-## Getting Started
+Production-oriented full-stack platform for financial education, LMS sales, and lead generation.
 
-First, run the development server:
+## Stack
+
+- Next.js (App Router) + React + TypeScript
+- Tailwind CSS + shadcn-style UI components
+- PostgreSQL + Prisma ORM
+- OTP user authentication + separate admin password login with JWT cookie sessions
+- Razorpay checkout + webhook-based course access
+- Bunny Stream video upload + tokenized embed playback support
+
+## Core Modules Implemented
+
+- Public site: Home, About, Courses, Blog (list/detail), Brokerage/MF hub, Insurance hub, Contact
+- Separate user/admin auth flows with role-based routing
+- Financial profiling engine with weighted risk classification (Conservative/Moderate/Aggressive)
+- LMS: course catalog, lessons, premium access via webhook-confirmed purchases, progress tracking
+- Brokerage affiliate bridge logging
+- Insurance HLV calculator + hot-lead quote trigger
+- Blog CMS (admin CRUD, draft/published, SEO fields, TipTap editor)
+- Lead CRM inbox + status updates + CSV download
+- Admin KPIs (users, leads, sales, revenue)
+
+## Quick Start
+
+1. Install dependencies
+
+```bash
+npm install
+```
+
+2. Configure environment
+
+```bash
+cp .env.example .env
+```
+
+Update `.env` values as needed (`DATABASE_URL`, `JWT_SECRET`, `ADMIN_LOGIN_EMAIL`, `ADMIN_LOGIN_PASSWORD`, Razorpay keys, Bunny Stream keys).
+
+3. Generate Prisma client
+
+```bash
+npm run prisma:generate
+```
+
+4. Create/apply database schema
+
+```bash
+npm run prisma:migrate
+```
+
+5. Seed demo data
+
+```bash
+npm run prisma:seed
+```
+
+6. Run development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+7. Verify PostgreSQL connection
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Open `http://localhost:3000/api/db-test` to confirm app-to-database connectivity.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Useful Scripts
 
-## Learn More
+- `npm run lint`
+- `npm run typecheck`
+- `npm run build`
+- `npm run prisma:generate`
+- `npm run prisma:migrate`
+- `npm run prisma:seed`
 
-To learn more about Next.js, take a look at the following resources:
+## Security Notes
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- OTP request and lead-capture APIs are rate-limited.
+- All major API inputs are validated with Zod.
+- User course access is granted only after Razorpay webhook verification.
+- Admin routes require admin session from admin-password login.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Demo Credentials
 
-## Deploy on Vercel
+Seed creates:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Admin user record: `admin@example.com`
+- User: `learner@example.com`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Login flows:
+
+- User login: OTP-based (`/login`). In local/dev mode OTP is logged by the server.
+- Admin login: email + password at `/admin` using `.env` values (`ADMIN_LOGIN_EMAIL`, `ADMIN_LOGIN_PASSWORD`).
+
+## Bunny Stream (Optional)
+
+To enable secure course video hosting with Bunny Stream, set these environment variables:
+
+- `BUNNY_STREAM_LIBRARY_ID`
+- `BUNNY_STREAM_API_KEY`
+- `BUNNY_STREAM_EMBED_TOKEN_KEY` (recommended for tokenized playback)
+- `BUNNY_STREAM_TOKEN_TTL_SECONDS` (default `3600`)
+
+Admin course manager supports direct Bunny upload per lesson and auto-fills embeddable lesson URL.
