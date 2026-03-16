@@ -38,8 +38,9 @@ export default async function RootLayout({
       <body className={`${manrope.variable} ${spaceGrotesk.variable} antialiased`}>
         <div className="flex min-h-dvh flex-col">
           {isAdminRoute ? null : <SiteHeader />}
-          <main className={`flex-1 ${isAdminRoute ? "" : "pb-[5.8rem] md:pb-0"}`}>{children}</main>
+          <main className="flex-1">{children}</main>
           {isAdminRoute ? null : <SiteFooter />}
+          {isAdminRoute ? null : <div aria-hidden className="h-[calc(5.9rem+env(safe-area-inset-bottom))] md:hidden" />}
           {isAdminRoute ? null : <MobileBottomNav />}
         </div>
       </body>
