@@ -1,3 +1,4 @@
+import { getPasswordHashByUserId } from "@/lib/email-verification";
 import { badRequest, serverError, unauthorized } from "@/lib/http";
 import { hashOtp } from "@/lib/otp";
 import { prisma } from "@/lib/prisma";
@@ -60,11 +61,15 @@ export async function POST(request: Request) {
         email: true,
         phone: true,
         role: true,
-        passwordHash: true,
       },
     });
 
-    if (!user?.passwordHash) {
+    if (!user) {
+      return unauthorized("Registration not found. Please register again.");
+    }
+
+    const passwordHash = await getPasswordHashByUserId(user.id);
+    if (!passwordHash) {
       return unauthorized("Registration not found. Please register again.");
     }
 

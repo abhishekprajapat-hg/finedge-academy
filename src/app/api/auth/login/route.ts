@@ -1,4 +1,4 @@
-import { getEmailVerifiedAtByUserId } from "@/lib/email-verification";
+import { getEmailVerifiedAtByUserId, getPasswordHashByUserId } from "@/lib/email-verification";
 import { badRequest, serverError, tooManyRequests, unauthorized } from "@/lib/http";
 import { verifyPassword } from "@/lib/password";
 import { prisma } from "@/lib/prisma";
@@ -36,7 +36,6 @@ export async function POST(request: Request) {
         email: true,
         phone: true,
         role: true,
-        passwordHash: true,
       },
     });
 
@@ -44,11 +43,12 @@ export async function POST(request: Request) {
       return unauthorized("Invalid email or password");
     }
 
-    if (!user.passwordHash) {
+    const passwordHash = await getPasswordHashByUserId(user.id);
+    if (!passwordHash) {
       return unauthorized("Password not set for this account. Use Forgot Password to create one.");
     }
 
-    const passwordMatches = await verifyPassword(parsed.data.password, user.passwordHash);
+    const passwordMatches = await verifyPassword(parsed.data.password, passwordHash);
     if (!passwordMatches) {
       return unauthorized("Invalid email or password");
     }

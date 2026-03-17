@@ -72,21 +72,23 @@ export async function POST(request: Request) {
 
     const newPasswordHash = await hashPassword(parsed.data.password);
 
-    await prisma.$transaction([
-      prisma.user.update({
-        where: { id: user.id },
-        data: {
-          passwordHash: newPasswordHash,
-        },
-      }),
-      prisma.otpRequest.update({
+    await prisma.$transaction(async (tx) => {
+      const now = new Date();
+
+      await tx.$executeRaw`
+        UPDATE "User"
+        SET "passwordHash" = ${newPasswordHash}
+        WHERE "id" = ${user.id}
+      `;
+
+      await tx.otpRequest.update({
         where: { id: otpRecord.id },
         data: {
-          usedAt: new Date(),
+          usedAt: now,
           userId: user.id,
         },
-      }),
-    ]);
+      });
+    });
 
     return NextResponse.json({
       ok: true,

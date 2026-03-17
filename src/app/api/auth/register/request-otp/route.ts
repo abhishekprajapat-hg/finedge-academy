@@ -63,7 +63,6 @@ export async function POST(request: Request) {
             where: { id: existingUser.id },
             data: {
               fullName: parsed.data.fullName,
-              passwordHash,
               role: Role.USER,
             },
             select: { id: true },
@@ -72,11 +71,16 @@ export async function POST(request: Request) {
             data: {
               fullName: parsed.data.fullName,
               email,
-              passwordHash,
               role: Role.USER,
             },
             select: { id: true },
           });
+
+      await tx.$executeRaw`
+        UPDATE "User"
+        SET "passwordHash" = ${passwordHash}
+        WHERE "id" = ${user.id}
+      `;
 
       await tx.otpRequest.create({
         data: {
