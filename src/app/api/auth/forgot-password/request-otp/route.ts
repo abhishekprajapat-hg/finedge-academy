@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getEmailVerifiedAtByUserId } from "@/lib/email-verification";
 import { badRequest, serverError, tooManyRequests } from "@/lib/http";
 import { generateOtpCode, hashOtp, sendOtpCode } from "@/lib/otp";
 import { prisma } from "@/lib/prisma";
@@ -33,7 +34,6 @@ export async function POST(request: Request) {
       where: { email },
       select: {
         id: true,
-        emailVerifiedAt: true,
       },
     });
 
@@ -41,7 +41,8 @@ export async function POST(request: Request) {
       return badRequest("No account found with this email. Please register first.");
     }
 
-    if (!user.emailVerifiedAt) {
+    const emailVerifiedAt = await getEmailVerifiedAtByUserId(user.id);
+    if (!emailVerifiedAt) {
       return badRequest("Email is not verified yet. Complete registration OTP first.");
     }
 

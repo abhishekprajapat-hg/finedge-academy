@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getEmailVerifiedAtByUserId } from "@/lib/email-verification";
 import { badRequest, serverError, unauthorized } from "@/lib/http";
 import { hashOtp } from "@/lib/otp";
 import { hashPassword } from "@/lib/password";
@@ -57,11 +58,15 @@ export async function POST(request: Request) {
       where: { email },
       select: {
         id: true,
-        emailVerifiedAt: true,
       },
     });
 
-    if (!user?.emailVerifiedAt) {
+    if (!user) {
+      return unauthorized("Account not found");
+    }
+
+    const emailVerifiedAt = await getEmailVerifiedAtByUserId(user.id);
+    if (!emailVerifiedAt) {
       return unauthorized("Account not found");
     }
 

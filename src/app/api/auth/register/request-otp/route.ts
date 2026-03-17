@@ -1,5 +1,6 @@
 import { Role } from "@prisma/client";
 import { NextResponse } from "next/server";
+import { getEmailVerifiedAtByUserId } from "@/lib/email-verification";
 import { badRequest, serverError, tooManyRequests } from "@/lib/http";
 import { generateOtpCode, hashOtp, sendOtpCode } from "@/lib/otp";
 import { hashPassword } from "@/lib/password";
@@ -36,7 +37,6 @@ export async function POST(request: Request) {
       select: {
         id: true,
         role: true,
-        emailVerifiedAt: true,
       },
     });
 
@@ -44,7 +44,11 @@ export async function POST(request: Request) {
       return badRequest("This email cannot be used for member registration.");
     }
 
-    if (existingUser?.emailVerifiedAt) {
+    const existingEmailVerifiedAt = existingUser
+      ? await getEmailVerifiedAtByUserId(existingUser.id)
+      : null;
+
+    if (existingEmailVerifiedAt) {
       return badRequest("Account already exists. Please login.");
     }
 

@@ -68,26 +68,38 @@ export async function POST(request: Request) {
       return unauthorized("Registration not found. Please register again.");
     }
 
-    const [updatedUser] = await prisma.$transaction([
-      prisma.user.update({
-        where: { id: user.id },
-        data: { emailVerifiedAt: new Date() },
-        select: {
-          id: true,
-          fullName: true,
-          email: true,
-          phone: true,
-          role: true,
-        },
-      }),
-      prisma.otpRequest.update({
+    await prisma.$transaction(async (tx) => {
+      const now = new Date();
+
+      await tx.$executeRaw`
+        UPDATE "User"
+        SET "emailVerifiedAt" = ${now}
+        WHERE "id" = ${user.id}
+      `;
+
+      await tx.otpRequest.update({
         where: { id: otpRecord.id },
         data: {
-          usedAt: new Date(),
+          usedAt: now,
           userId: user.id,
         },
-      }),
-    ]);
+      });
+    });
+
+    const updatedUser = await prisma.user.findUnique({
+      where: { id: user.id },
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        phone: true,
+        role: true,
+      },
+    });
+
+    if (!updatedUser) {
+      return unauthorized("Registration not found. Please register again.");
+    }
 
     return buildSessionResponse(updatedUser);
   } catch (error) {

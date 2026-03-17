@@ -1,3 +1,4 @@
+import { getEmailVerifiedAtByUserId } from "@/lib/email-verification";
 import { badRequest, serverError, tooManyRequests, unauthorized } from "@/lib/http";
 import { verifyPassword } from "@/lib/password";
 import { prisma } from "@/lib/prisma";
@@ -36,7 +37,6 @@ export async function POST(request: Request) {
         phone: true,
         role: true,
         passwordHash: true,
-        emailVerifiedAt: true,
       },
     });
 
@@ -53,7 +53,8 @@ export async function POST(request: Request) {
       return unauthorized("Invalid email or password");
     }
 
-    if (!user.emailVerifiedAt) {
+    const emailVerifiedAt = await getEmailVerifiedAtByUserId(user.id);
+    if (!emailVerifiedAt) {
       return unauthorized("Email not verified. Complete registration OTP first.");
     }
 
