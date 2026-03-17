@@ -22,6 +22,10 @@ export const metadata: Metadata = {
   },
   description:
     "Financial education, profiling, brokerage and insurance lead platform with an integrated LMS and CRM.",
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    shortcut: [{ url: "/icon.svg", type: "image/svg+xml" }],
+  },
 };
 
 export default function RootLayout({
