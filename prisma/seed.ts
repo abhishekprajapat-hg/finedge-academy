@@ -375,13 +375,11 @@ async function main() {
     update: {
       role: Role.ADMIN,
       fullName: "Platform Admin",
-      emailVerifiedAt: now,
     },
     create: {
       email: adminEmail,
       fullName: "Platform Admin",
       role: Role.ADMIN,
-      emailVerifiedAt: now,
     },
   });
 
@@ -390,15 +388,23 @@ async function main() {
     update: {
       fullName: "Demo Learner",
       role: Role.USER,
-      emailVerifiedAt: now,
     },
     create: {
       email: userEmail,
       fullName: "Demo Learner",
       role: Role.USER,
-      emailVerifiedAt: now,
     },
   });
+
+  try {
+    await prisma.$executeRaw`
+      UPDATE "User"
+      SET "emailVerifiedAt" = ${now}
+      WHERE "id" IN (${admin.id}, ${user.id})
+    `;
+  } catch (error) {
+    console.warn("Skipping email verification stamp during seed:", error);
+  }
 
   const seededCourses = await Promise.all(
     courseSeeds.map((courseSeed) =>

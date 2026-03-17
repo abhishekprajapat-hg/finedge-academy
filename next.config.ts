@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
+const distDir = process.env.VERCEL ? ".next" : ".next-local";
+
 const nextConfig: NextConfig = {
-  distDir: ".next-local",
+  distDir,
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 60 * 60 * 24 * 30,
