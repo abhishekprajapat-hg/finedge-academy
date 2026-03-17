@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const distDir = process.env.VERCEL ? ".next" : ".next-local";
+const distDir = process.env.NODE_ENV === "development" ? ".next-local" : ".next";
 
 const nextConfig: NextConfig = {
   distDir,
