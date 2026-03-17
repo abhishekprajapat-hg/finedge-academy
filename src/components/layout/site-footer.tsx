@@ -13,7 +13,7 @@ const footerLinks = [
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-[#c6d8e9] bg-[linear-gradient(180deg,#f7fbff_0%,#edf4fb_100%)]">
+    <footer className="finedge-footer border-t border-[#c6d8e9] bg-[linear-gradient(180deg,#f7fbff_0%,#edf4fb_100%)]">
       <div className="site-container py-6 md:hidden">
         <div className="rounded-2xl border border-[#d1e1ef] bg-white/85 p-4">
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#4f6e8a]">FinEdge Academy</p>
@@ -37,6 +37,7 @@ export function SiteFooter() {
                   <Link
                     key={item.href}
                     href={item.href}
+                    prefetch={false}
                     className="inline-flex items-center gap-1 rounded-full border border-[#c6d8e9] bg-[#f5f9fd] px-3 py-1.5 text-xs font-semibold text-[#2c4865] hover:border-[#96bddb] hover:text-[#006d77]"
                   >
                     {item.label}
@@ -53,7 +54,7 @@ export function SiteFooter() {
               <p className="text-sm text-[#4b6078]">
                 Advisory decisions must be validated with registered professionals before execution.
               </p>
-              <Link href="/contact" className="inline-flex items-center gap-1 text-sm font-semibold text-[#006d77] hover:text-[#0a4d5d]">
+              <Link href="/contact" prefetch={false} className="inline-flex items-center gap-1 text-sm font-semibold text-[#006d77] hover:text-[#0a4d5d]">
                 Speak to support
                 <ArrowUpRight className="h-4 w-4" />
               </Link>

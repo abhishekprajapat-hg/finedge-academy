@@ -12,7 +12,9 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
   const hideSiteShell = (
     <style>{`
       header,
-      footer {
+      footer,
+      .finedge-mobile-nav,
+      .finedge-mobile-nav-spacer {
         display: none !important;
       }
     `}</style>

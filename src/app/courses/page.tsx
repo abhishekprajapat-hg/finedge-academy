@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   title: "Courses",
 };
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 type CatalogCourse = {
   id: string;
@@ -90,7 +90,7 @@ export default async function CoursesPage() {
       <div className="site-container space-y-10 py-12">
         <section className="hero-gradient hero-courses p-7 sm:p-8">
           <div className="relative z-10 space-y-5">
-            <Badge className="border-white/25 bg-white/10 text-white">FinEdge Learning Programs</Badge>
+            <Badge className="hero-badge">FinEdge Learning Programs</Badge>
 
             <div className="space-y-3">
               <h1 className="max-w-4xl text-3xl font-bold leading-tight text-white sm:text-4xl">

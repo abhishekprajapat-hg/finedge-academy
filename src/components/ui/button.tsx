@@ -4,19 +4,19 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center rounded-xl text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0d7a84]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:pointer-events-none disabled:opacity-50",
+  "finedge-button inline-flex items-center justify-center rounded-xl text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0d7a84]/55 focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
         default:
-          "bg-gradient-to-r from-[#006d77] via-[#007d88] to-[#005963] text-white shadow-[0_14px_30px_-16px_rgba(0,109,119,0.75)] hover:-translate-y-0.5 hover:from-[#007a85] hover:to-[#00626c]",
+          "finedge-btn-default bg-gradient-to-r from-[#006d77] via-[#007d88] to-[#005963] text-white shadow-[0_14px_30px_-16px_rgba(0,109,119,0.75)] hover:-translate-y-0.5 hover:from-[#007a85] hover:to-[#00626c]",
         secondary:
-          "border border-[#9dcfd0] bg-[#e6f8f7] text-[#055d66] shadow-[0_10px_24px_-20px_rgba(0,109,119,0.5)] hover:bg-[#d6f2f0]",
+          "finedge-btn-secondary border border-[#9dcfd0] bg-[#e6f8f7] text-[#055d66] shadow-[0_10px_24px_-20px_rgba(0,109,119,0.5)] hover:bg-[#d6f2f0]",
         outline:
-          "border border-[#b8d0e5] bg-white text-[#0d1b2a] shadow-[0_12px_24px_-22px_rgba(9,30,66,0.45)] hover:border-[#95bfdc] hover:bg-[#f7fbff]",
-        ghost: "text-[#1f3b59] hover:bg-[#e9f2fb]",
+          "finedge-btn-outline border border-[#b8d0e5] bg-white text-[#0d1b2a] shadow-[0_12px_24px_-22px_rgba(9,30,66,0.45)] hover:border-[#95bfdc] hover:bg-[#f7fbff]",
+        ghost: "finedge-btn-ghost text-[#1f3b59] hover:bg-[#e9f2fb]",
         destructive:
-          "bg-gradient-to-r from-rose-700 to-rose-600 text-white shadow-[0_14px_30px_-16px_rgba(190,24,93,0.7)] hover:from-rose-600 hover:to-rose-500",
+          "finedge-btn-destructive bg-gradient-to-r from-rose-700 to-rose-600 text-white shadow-[0_14px_30px_-16px_rgba(190,24,93,0.7)] hover:from-rose-600 hover:to-rose-500",
       },
       size: {
         default: "h-11 px-5 py-2",

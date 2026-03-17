@@ -5,7 +5,7 @@ import { LessonCompleteButton } from "@/components/dashboard/lesson-complete-but
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getCurrentUser } from "@/lib/auth";
+import { getSessionUserFromCookies } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { toPlayableVideoUrl } from "@/lib/video";
 
@@ -17,7 +17,7 @@ export default async function LessonPage({
   params: Promise<{ courseId: string; lessonId: string }>;
 }) {
   const { courseId, lessonId } = await params;
-  const user = await getCurrentUser();
+  const user = await getSessionUserFromCookies();
 
   if (!user) {
     redirect(`/login?redirect=${encodeURIComponent(`/dashboard/learning/${courseId}/lesson/${lessonId}`)}`);
@@ -72,6 +72,10 @@ export default async function LessonPage({
       lessonId: {
         in: accessibleLessons.map((item) => item.id),
       },
+    },
+    select: {
+      lessonId: true,
+      completedAt: true,
     },
   });
 

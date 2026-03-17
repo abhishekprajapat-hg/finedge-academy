@@ -1,0 +1,41 @@
+<svg width="1920" height="1280" viewBox="0 0 1920 1280" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="base" x1="110" y1="62" x2="1738" y2="1228" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F2F9FF"/>
+      <stop offset="0.54" stop-color="#EAF4FF"/>
+      <stop offset="1" stop-color="#E3EFFF"/>
+    </linearGradient>
+    <radialGradient id="spotA" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(338 182) rotate(32.8) scale(590 390)">
+      <stop stop-color="#29B2BE" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#29B2BE" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="spotB" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1608 232) rotate(147) scale(520 362)">
+      <stop stop-color="#F6A66C" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#F6A66C" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="spotC" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(974 962) rotate(90) scale(420 980)">
+      <stop stop-color="#3177A8" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#3177A8" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="arc1" x1="112" y1="538" x2="1800" y2="470" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0B6E8B" stop-opacity="0.02"/>
+      <stop offset="0.5" stop-color="#0B6E8B" stop-opacity="0.14"/>
+      <stop offset="1" stop-color="#0B6E8B" stop-opacity="0.02"/>
+    </linearGradient>
+    <linearGradient id="arc2" x1="88" y1="864" x2="1844" y2="782" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#006D77" stop-opacity="0.01"/>
+      <stop offset="0.48" stop-color="#006D77" stop-opacity="0.11"/>
+      <stop offset="1" stop-color="#006D77" stop-opacity="0.01"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1920" height="1280" fill="url(#base)"/>
+  <rect width="1920" height="1280" fill="url(#spotA)"/>
+  <rect width="1920" height="1280" fill="url(#spotB)"/>
+  <rect width="1920" height="1280" fill="url(#spotC)"/>
+
+  <g opacity="0.65">
+    <path d="M-52 552C198 442 422 432 642 482C864 532 1018 624 1258 648C1502 674 1694 640 1988 536" stroke="url(#arc1)" stroke-width="3"/>
+    <path d="M-36 888C222 786 442 782 672 822C914 864 1090 936 1334 944C1594 952 1768 920 2004 826" stroke="url(#arc2)" stroke-width="3"/>
+  </g>
+</svg>

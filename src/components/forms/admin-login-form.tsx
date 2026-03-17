@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { dispatchAuthChanged } from "@/lib/auth-events";
 
 export function AdminLoginForm() {
   const router = useRouter();
@@ -36,6 +37,7 @@ export function AdminLoginForm() {
         return;
       }
 
+      dispatchAuthChanged();
       router.push("/admin");
       router.refresh();
     } catch {
@@ -46,9 +48,9 @@ export function AdminLoginForm() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-      <h1 className="text-2xl font-bold text-slate-900">Admin Login</h1>
-      <p className="mt-1 text-sm text-slate-600">Only authorized admins can access the control center.</p>
+    <div className="finedge-form-surface mx-auto w-full max-w-md rounded-2xl p-6">
+      <h1 className="text-2xl font-bold text-[#0d1b2a]">Admin Login</h1>
+      <p className="mt-1 text-sm text-[#4d6480]">Only authorized admins can access the control center.</p>
 
       <form onSubmit={onSubmit} className="mt-5 space-y-4">
         <div className="space-y-2">

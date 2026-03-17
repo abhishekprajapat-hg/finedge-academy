@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { dispatchAuthChanged } from "@/lib/auth-events";
 
 export function LogoutButton() {
   const router = useRouter();
@@ -11,7 +12,10 @@ export function LogoutButton() {
   const handleLogout = async () => {
     setLoading(true);
     try {
-      await fetch("/api/auth/logout", { method: "POST" });
+      const response = await fetch("/api/auth/logout", { method: "POST" });
+      if (response.ok) {
+        dispatchAuthChanged();
+      }
       router.push("/");
       router.refresh();
     } finally {
@@ -20,7 +24,7 @@ export function LogoutButton() {
   };
 
   return (
-    <Button variant="outline" size="sm" onClick={handleLogout} disabled={loading}>
+    <Button variant="outline" size="sm" className="whitespace-nowrap" onClick={handleLogout} disabled={loading}>
       {loading ? "Signing out..." : "Sign out"}
     </Button>
   );

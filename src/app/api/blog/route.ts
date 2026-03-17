@@ -18,6 +18,13 @@ export async function GET() {
     },
   });
 
-  return NextResponse.json({ ok: true, posts });
+  return NextResponse.json(
+    { ok: true, posts },
+    {
+      headers: {
+        "Cache-Control": "public, s-maxage=300, stale-while-revalidate=86400",
+      },
+    },
+  );
 }
 

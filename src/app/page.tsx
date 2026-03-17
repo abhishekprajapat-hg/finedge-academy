@@ -145,7 +145,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-[#d5e3ef] bg-[linear-gradient(180deg,#f8fcff_0%,#edf5fd_100%)] p-5">
+          <div className="finedge-journey-side rounded-2xl p-5">
             <p className="text-sm font-semibold uppercase tracking-[0.12em] text-[#547693]">Popular Next Steps</p>
             <div className="mt-4 grid gap-3">
               <Link href="/profile" className="rounded-xl border border-[#bfd6e8] bg-white p-4 text-sm font-semibold text-[#27425d] hover:border-[#8eb8d9] hover:text-[#006d77]">

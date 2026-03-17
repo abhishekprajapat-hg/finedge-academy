@@ -10,8 +10,7 @@ export const metadata: Metadata = {
   title: "Blog",
 };
 
-export const dynamic = "force-dynamic";
-export const revalidate = 60;
+export const revalidate = 300;
 
 export default async function BlogPage() {
   const { posts, dbUnavailable } = await (async () => {
@@ -50,7 +49,7 @@ export default async function BlogPage() {
       <div className="site-container space-y-8 py-12">
         <section className="hero-gradient hero-blog p-7 sm:p-8">
           <div className="relative z-10 space-y-4">
-            <Badge className="w-fit border-white/30 bg-white/10 text-white">Financial Education Blog</Badge>
+            <Badge className="hero-badge w-fit">Financial Education Blog</Badge>
             <h1 className="max-w-3xl text-4xl font-bold tracking-tight text-white sm:text-5xl">Insights built for practical money decisions.</h1>
             <p className="max-w-3xl text-sm leading-7 text-[#d4e8f4] sm:text-base">
               Read implementation-focused guides across investing, risk, insurance, and personal finance discipline.

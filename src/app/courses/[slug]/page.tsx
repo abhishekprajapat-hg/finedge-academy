@@ -7,7 +7,7 @@ import { Disclaimer } from "@/components/layout/disclaimer";
 import { DatabaseUnavailable } from "@/components/layout/database-unavailable";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getCurrentUser } from "@/lib/auth";
+import { getSessionUserFromCookies } from "@/lib/auth";
 import { formatINR } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 
@@ -15,7 +15,15 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const course = await prisma.course.findUnique({ where: { slug } }).catch(() => null);
+  const course = await prisma.course
+    .findUnique({
+      where: { slug },
+      select: {
+        title: true,
+        description: true,
+      },
+    })
+    .catch(() => null);
 
   return {
     title: course?.title ?? "Course",
@@ -41,7 +49,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
         return { course: null, dbUnavailable: true };
       }
     })(),
-    getCurrentUser(),
+    getSessionUserFromCookies(),
   ]);
 
   const { course, dbUnavailable } = courseResult;
@@ -128,42 +136,57 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
               <CardContent className="space-y-3">
                 {course.lessons.map((lesson) => {
                   const canOpenLesson = purchased || lesson.isPreview;
+                  const lessonHref = `/dashboard/learning/${course.id}/lesson/${lesson.id}`;
+
+                  const lessonRow = (
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div className="flex min-w-0 items-start gap-3">
+                        <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#edf5ff] text-xs font-semibold text-[#3d5f80]">
+                          {String(lesson.lessonOrder).padStart(2, "0")}
+                        </span>
+
+                        <div className="space-y-1">
+                          {canOpenLesson ? (
+                            <p className="font-semibold text-[#006d77] transition group-hover:text-[#0a4d5d]">{lesson.title}</p>
+                          ) : (
+                            <p className="font-semibold text-[#153451]">{lesson.title}</p>
+                          )}
+                          <p className="text-sm text-[#4d6480]">{lesson.description || "Focused practical lesson for this module."}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        {lesson.isPreview ? (
+                          <Badge variant="neutral" className="inline-flex items-center gap-1">
+                            <PlayCircle className="h-3.5 w-3.5" />
+                            Preview
+                          </Badge>
+                        ) : null}
+                        {!lesson.isPreview && !purchased ? (
+                          <Badge variant="warning" className="inline-flex items-center gap-1">
+                            <Lock className="h-3.5 w-3.5" />
+                            Locked
+                          </Badge>
+                        ) : null}
+                      </div>
+                    </div>
+                  );
+
+                  if (canOpenLesson) {
+                    return (
+                      <Link
+                        key={lesson.id}
+                        href={lessonHref}
+                        className="group block rounded-xl border border-[#d1e1ef] p-4 transition hover:border-[#8eb8d9] hover:bg-[#f3f9ff]"
+                      >
+                        {lessonRow}
+                      </Link>
+                    );
+                  }
 
                   return (
                     <div key={lesson.id} className="rounded-xl border border-[#d1e1ef] p-4 transition hover:border-[#8eb8d9] hover:bg-[#f3f9ff]">
-                      <div className="flex flex-wrap items-start justify-between gap-3">
-                        <div className="flex min-w-0 items-start gap-3">
-                          <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#edf5ff] text-xs font-semibold text-[#3d5f80]">
-                            {String(lesson.lessonOrder).padStart(2, "0")}
-                          </span>
-
-                          <div className="space-y-1">
-                            {canOpenLesson ? (
-                              <Link href={`/dashboard/learning/${course.id}/lesson/${lesson.id}`} className="font-semibold text-[#006d77] hover:text-[#0a4d5d]">
-                                {lesson.title}
-                              </Link>
-                            ) : (
-                              <p className="font-semibold text-[#153451]">{lesson.title}</p>
-                            )}
-                            <p className="text-sm text-[#4d6480]">{lesson.description || "Focused practical lesson for this module."}</p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          {lesson.isPreview ? (
-                            <Badge variant="neutral" className="inline-flex items-center gap-1">
-                              <PlayCircle className="h-3.5 w-3.5" />
-                              Preview
-                            </Badge>
-                          ) : null}
-                          {!lesson.isPreview && !purchased ? (
-                            <Badge variant="warning" className="inline-flex items-center gap-1">
-                              <Lock className="h-3.5 w-3.5" />
-                              Locked
-                            </Badge>
-                          ) : null}
-                        </div>
-                      </div>
+                      {lessonRow}
                     </div>
                   );
                 })}

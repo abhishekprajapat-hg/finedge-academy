@@ -193,7 +193,7 @@ export default async function AdminPage() {
       <section className="rounded-2xl border border-emerald-200 bg-gradient-to-r from-emerald-950 via-emerald-900 to-sky-900 p-6 text-white shadow-lg">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="max-w-3xl space-y-3">
-            <Badge className="border-white/20 bg-white/10 text-emerald-50">Admin Control Center</Badge>
+            <Badge className="hero-badge">Admin Control Center</Badge>
             <h1 className="text-3xl font-bold tracking-tight">Central dashboard for platform operations</h1>
             <p className="text-sm text-emerald-100/90 sm:text-base">
               Leads, content, learning sales, and user growth in one place. Use quick actions below to jump into any admin workflow.

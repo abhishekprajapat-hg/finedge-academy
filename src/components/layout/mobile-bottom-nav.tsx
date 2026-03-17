@@ -49,7 +49,7 @@ export function MobileBottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-[#c6d8e9]/90 bg-[rgba(247,252,255,0.95)] backdrop-blur-xl md:hidden">
+    <nav className="finedge-mobile-nav fixed inset-x-0 bottom-0 z-50 border-t border-[#c6d8e9]/90 bg-[rgba(247,252,255,0.95)] backdrop-blur-xl md:hidden">
       <div className="mx-auto flex w-full max-w-[560px] items-center justify-around px-2 pb-[max(0.45rem,env(safe-area-inset-bottom))] pt-2">
         {navItems.map((item) => {
           const active = item.isActive(pathname);
@@ -58,12 +58,15 @@ export function MobileBottomNav() {
             <Link
               key={item.href}
               href={item.href}
+              prefetch={false}
               className={cn(
-                "flex min-w-[60px] flex-col items-center gap-1 rounded-xl px-2 py-1.5 text-[11px] font-semibold transition",
+                "finedge-mobile-nav-link flex min-w-[60px] flex-col items-center gap-1 rounded-xl px-2 py-1.5 text-[11px] font-semibold transition",
                 active ? "bg-[#dff3f2] text-[#055b64]" : "text-[#4d6480]",
+                active ? "is-active" : "is-inactive",
               )}
+              aria-current={active ? "page" : undefined}
             >
-              <item.icon className={cn("h-4 w-4", active ? "text-[#006d77]" : "text-[#62819c]")} />
+              <item.icon className={cn("finedge-mobile-nav-icon h-4 w-4", active ? "text-[#006d77]" : "text-[#62819c]")} />
               <span>{item.label}</span>
             </Link>
           );

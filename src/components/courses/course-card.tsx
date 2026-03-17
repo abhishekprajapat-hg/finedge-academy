@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Course } from "@prisma/client";
 import { ArrowRight, CirclePlay, Layers3 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +12,10 @@ type CoursePreview = Pick<Course, "title" | "slug" | "description" | "pricePaise
   previewLessonsCount?: number;
 };
 
+function isExternalUrl(url: string) {
+  return /^https?:\/\//i.test(url);
+}
+
 export function CourseCard({ course }: { course: CoursePreview }) {
   const lessonsCount = course.lessonsCount ?? 0;
   const previewLessonsCount = course.previewLessonsCount ?? 0;
@@ -18,13 +23,21 @@ export function CourseCard({ course }: { course: CoursePreview }) {
   return (
     <Card className="group h-full overflow-hidden border-[#c6d8e9] transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_30px_60px_-38px_rgba(9,30,66,0.75)]">
       <div className="relative h-44 overflow-hidden">
+        {course.thumbnailUrl ? (
+          <Image
+            src={course.thumbnailUrl}
+            alt={course.title}
+            fill
+            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            className="object-cover transition duration-500 group-hover:scale-105"
+            unoptimized={isExternalUrl(course.thumbnailUrl)}
+          />
+        ) : (
+          <div className="absolute inset-0" style={{ backgroundImage: "linear-gradient(125deg, #083043, #0f5161)" }} />
+        )}
         <div
-          className="absolute inset-0 bg-cover bg-center transition duration-500 group-hover:scale-105"
-          style={{
-            backgroundImage: course.thumbnailUrl
-              ? `linear-gradient(180deg, rgba(13,27,42,0.08), rgba(6,25,39,0.7)), url(${course.thumbnailUrl})`
-              : "linear-gradient(125deg, #083043, #0f5161)",
-          }}
+          aria-hidden
+          className="absolute inset-0 bg-[linear-gradient(180deg,rgba(13,27,42,0.08),rgba(6,25,39,0.7))]"
         />
         <div className="relative z-10 flex h-full flex-col justify-between p-3">
           <Badge className="w-fit border-white/25 bg-black/35 text-white">Self-Paced Program</Badge>
@@ -58,7 +71,7 @@ export function CourseCard({ course }: { course: CoursePreview }) {
         </div>
 
         <Button asChild className="w-full">
-          <Link href={`/courses/${course.slug}`} className="flex items-center justify-center gap-2">
+          <Link href={`/courses/${course.slug}`} prefetch={false} className="flex items-center justify-center gap-2">
             View Curriculum
             <ArrowRight className="h-4 w-4" />
           </Link>

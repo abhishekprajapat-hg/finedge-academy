@@ -5,7 +5,7 @@ export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
   return (
     <div
       className={cn(
-        "rounded-2xl border border-[#c6d8e9] bg-[linear-gradient(145deg,rgba(255,255,255,0.95),rgba(248,252,255,0.9))] text-slate-900 shadow-[0_24px_60px_-38px_rgba(9,30,66,0.45)]",
+        "finedge-card rounded-2xl border border-[#c6d8e9] bg-[linear-gradient(145deg,rgba(255,255,255,0.95),rgba(248,252,255,0.9))] text-slate-900 shadow-[0_24px_60px_-38px_rgba(9,30,66,0.45)] transition-transform duration-300 ease-out hover:-translate-y-0.5",
         className,
       )}
       {...props}

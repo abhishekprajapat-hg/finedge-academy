@@ -31,7 +31,7 @@ export default function AboutPage() {
       <div className="site-container space-y-10 py-12">
         <section className="hero-gradient hero-about p-7 sm:p-8">
           <div className="relative z-10 max-w-4xl space-y-4">
-            <p className="kicker border-white/35 bg-white/10 text-[#d4ecff]">About FinEdge</p>
+            <p className="kicker">About FinEdge</p>
             <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">We turn financial education into practical action plans.</h1>
             <p className="text-sm leading-7 text-[#d3e7f3] sm:text-base">
               FinEdge Academy is designed for users who want clarity, better risk decisions, and implementation support instead of fragmented advice.

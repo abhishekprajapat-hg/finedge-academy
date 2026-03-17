@@ -73,7 +73,7 @@ export function LeadCaptureForm({
   return (
     <form
       onSubmit={onSubmit}
-      className="space-y-4 rounded-2xl border border-[#c9dcec] bg-[linear-gradient(160deg,#ffffff_0%,#f6fbff_100%)] p-5 shadow-[0_24px_58px_-44px_rgba(9,30,66,0.8)]"
+      className="finedge-form-surface space-y-4 rounded-2xl p-5"
     >
       <div className="space-y-1">
         <p className="inline-flex items-center gap-2 rounded-full border border-[#bcd8ea] bg-[#edf6ff] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#3f6384]">

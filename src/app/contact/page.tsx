@@ -10,7 +10,7 @@ export default function ContactPage() {
       <div className="site-container space-y-8 py-12">
         <section className="hero-gradient hero-contact p-7 sm:p-8">
           <div className="relative z-10 max-w-3xl space-y-4">
-            <p className="kicker border-white/30 bg-white/10 text-[#d4e8f4]">Contact Us</p>
+            <p className="kicker">Contact Us</p>
             <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">Tell us your goal. We will map your next best step.</h1>
             <p className="max-w-2xl text-sm leading-7 text-[#d4e8f4] sm:text-base">
               Whether you need help with portfolio direction, course selection, or insurance and brokerage support, our team will guide you quickly.

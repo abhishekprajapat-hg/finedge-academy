@@ -1,20 +1,42 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { DatabaseUnavailable } from "@/components/layout/database-unavailable";
-import { LeadCaptureForm } from "@/components/forms/lead-capture-form";
 import { Disclaimer } from "@/components/layout/disclaimer";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatDate } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 60;
+export const revalidate = 300;
+
+export async function generateStaticParams() {
+  try {
+    const posts = await prisma.blogPost.findMany({
+      where: { status: "PUBLISHED" },
+      select: { slug: true },
+    });
+
+    return posts.map((post) => ({ slug: post.slug }));
+  } catch {
+    return [];
+  }
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const post = await prisma.blogPost.findUnique({ where: { slug } }).catch(() => null);
+  const post = await prisma.blogPost
+    .findUnique({
+      where: { slug },
+      select: {
+        title: true,
+        metaTitle: true,
+        excerpt: true,
+        metaDescription: true,
+      },
+    })
+    .catch(() => null);
 
   if (!post) {
     return {
@@ -57,10 +79,20 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
     notFound();
   }
 
+  const imageIsExternal = post.featuredImage ? /^https?:\/\//i.test(post.featuredImage) : false;
+
   return (
     <div className="page-shell">
-      <div className="site-container grid gap-8 py-12 lg:grid-cols-[1.2fr_0.8fr]">
-        <article className="space-y-6">
+      <div className="site-container py-12">
+        <article className="mx-auto max-w-4xl space-y-6">
+          <Link
+            href="/blog"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-[#006d77] hover:text-[#0a4d5d]"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Blogs
+          </Link>
+
           <section className="hero-gradient hero-blog-detail p-6 sm:p-7">
             <div className="relative z-10 space-y-3">
               <p className="text-xs uppercase tracking-[0.12em] text-[#d4e8f4]">{post.publishedAt ? formatDate(post.publishedAt) : "Draft"}</p>
@@ -70,7 +102,16 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
           </section>
 
           {post.featuredImage ? (
-            <div className="h-64 rounded-2xl border border-[#c6d8e9] bg-cover bg-center" style={{ backgroundImage: `url(${post.featuredImage})` }} />
+            <div className="relative h-64 overflow-hidden rounded-2xl border border-[#c6d8e9]">
+              <Image
+                src={post.featuredImage}
+                alt={post.title}
+                fill
+                sizes="(min-width: 1024px) 896px, 100vw"
+                className="object-cover"
+                unoptimized={imageIsExternal}
+              />
+            </div>
           ) : null}
 
           <Card>
@@ -92,10 +133,6 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
 
           <Disclaimer />
         </article>
-
-        <div className="space-y-4 lg:sticky lg:top-24 lg:self-start">
-          <LeadCaptureForm source={`Blog Post: ${post.title}`} defaultInterest="Consultation" title="Need Guidance on This Topic?" />
-        </div>
       </div>
     </div>
   );

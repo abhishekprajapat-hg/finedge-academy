@@ -1,13 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BlogStatus } from "@prisma/client";
 import { RichTextEditor } from "@/components/admin/rich-text-editor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+
+const BLOG_STATUS = {
+  DRAFT: "DRAFT",
+  PUBLISHED: "PUBLISHED",
+} as const;
+
+type BlogStatus = (typeof BLOG_STATUS)[keyof typeof BLOG_STATUS];
 
 type BlogPost = {
   id: string;
@@ -40,7 +46,7 @@ const initialForm: BlogForm = {
   featuredImage: "",
   metaTitle: "",
   metaDescription: "",
-  status: BlogStatus.DRAFT,
+  status: BLOG_STATUS.DRAFT,
 };
 
 export function BlogManager() {
@@ -184,8 +190,8 @@ export function BlogManager() {
         <div className="space-y-2">
           <Label>Status</Label>
           <Select value={form.status} onChange={(event) => setForm((prev) => ({ ...prev, status: event.target.value as BlogStatus }))}>
-            <option value={BlogStatus.DRAFT}>Draft</option>
-            <option value={BlogStatus.PUBLISHED}>Published</option>
+            <option value={BLOG_STATUS.DRAFT}>Draft</option>
+            <option value={BLOG_STATUS.PUBLISHED}>Published</option>
           </Select>
         </div>
       </div>

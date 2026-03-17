@@ -12,6 +12,13 @@ export async function GET() {
     },
   });
 
-  return NextResponse.json({ ok: true, courses });
+  return NextResponse.json(
+    { ok: true, courses },
+    {
+      headers: {
+        "Cache-Control": "public, s-maxage=300, stale-while-revalidate=86400",
+      },
+    },
+  );
 }
 

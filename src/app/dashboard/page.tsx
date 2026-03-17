@@ -4,13 +4,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate, formatINR } from "@/lib/format";
-import { getCurrentUser } from "@/lib/auth";
+import { getSessionUserFromCookies } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const user = await getCurrentUser();
+  const user = await getSessionUserFromCookies();
   if (!user) {
     redirect("/login?redirect=/dashboard");
   }
@@ -18,17 +18,23 @@ export default async function DashboardPage() {
   const [latestProfile, purchases] = await Promise.all([
     prisma.financialProfile.findFirst({
       where: { userId: user.id },
+      select: {
+        category: true,
+        weightedScore: true,
+      },
       orderBy: { createdAt: "desc" },
     }),
     prisma.purchase.findMany({
       where: { userId: user.id, status: "PAID" },
       orderBy: { purchasedAt: "desc" },
-      include: {
+      select: {
+        id: true,
+        amountPaise: true,
+        purchasedAt: true,
         course: {
-          include: {
-            lessons: {
-              orderBy: { lessonOrder: "asc" },
-            },
+          select: {
+            id: true,
+            title: true,
           },
         },
       },
@@ -40,7 +46,7 @@ export default async function DashboardPage() {
       <div className="site-container space-y-8 py-12">
         <section className="hero-gradient hero-dashboard p-7 sm:p-8">
           <div className="relative z-10 space-y-3">
-            <p className="kicker border-white/30 bg-white/10 text-[#d4e8f4]">User Dashboard</p>
+            <p className="kicker">User Dashboard</p>
             <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">Welcome back, {user.fullName || user.email || user.phone}.</h1>
             <p className="max-w-3xl text-sm leading-7 text-[#d4e8f4] sm:text-base">
               Track profile insights, continue purchased courses, and keep your learning progress moving.

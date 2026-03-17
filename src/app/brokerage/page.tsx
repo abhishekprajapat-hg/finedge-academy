@@ -13,7 +13,7 @@ export default function BrokeragePage() {
       <div className="site-container space-y-8 py-12">
         <section className="hero-gradient hero-brokerage p-7 sm:p-8">
           <div className="relative z-10 space-y-4">
-            <Badge className="border-white/30 bg-white/10 text-white">Brokerage & Mutual Funds</Badge>
+            <Badge className="hero-badge">Brokerage & Mutual Funds</Badge>
             <h1 className="max-w-4xl text-4xl font-bold tracking-tight text-white sm:text-5xl">
               Choose the right execution partner for investments.
             </h1>

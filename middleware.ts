@@ -3,17 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 const cookieName = "fin_edu_session";
 
-function nextWithRouteFlags(request: NextRequest) {
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("x-admin-route", request.nextUrl.pathname.startsWith("/admin") ? "1" : "0");
-
-  return NextResponse.next({
-    request: {
-      headers: requestHeaders,
-    },
-  });
-}
-
 async function readSession(request: NextRequest) {
   const token = request.cookies.get(cookieName)?.value;
   if (!token) {
@@ -49,7 +38,7 @@ export async function middleware(request: NextRequest) {
   if (pathname.startsWith("/admin")) {
     const isAdminRoot = pathname === "/admin" || pathname === "/admin/";
     if (isAdminRoot) {
-      return nextWithRouteFlags(request);
+      return NextResponse.next();
     }
 
     const session = await readSession(request);
@@ -58,7 +47,7 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  return nextWithRouteFlags(request);
+  return NextResponse.next();
 }
 
 export const config = {

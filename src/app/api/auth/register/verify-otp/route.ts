@@ -1,16 +1,13 @@
-import { Role } from "@prisma/client";
-import { NextResponse } from "next/server";
-import { sessionCookieOptions } from "@/lib/auth";
 import { badRequest, serverError, unauthorized } from "@/lib/http";
-import { signSessionToken } from "@/lib/jwt";
 import { hashOtp } from "@/lib/otp";
 import { prisma } from "@/lib/prisma";
-import { normalizeEmailIdentifier, otpVerifySchema } from "@/lib/validations/auth";
+import { buildSessionResponse } from "@/lib/session-response";
+import { normalizeEmailIdentifier, registerOtpVerifySchema } from "@/lib/validations/auth";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const parsed = otpVerifySchema.safeParse(body);
+    const parsed = registerOtpVerifySchema.safeParse(body);
 
     if (!parsed.success) {
       return badRequest("Invalid OTP verification payload", parsed.error.flatten());
@@ -26,7 +23,7 @@ export async function POST(request: Request) {
     const otpRecord = await prisma.otpRequest.findFirst({
       where: {
         identifier: email,
-        channel: "email",
+        channel: "register",
         usedAt: null,
       },
       orderBy: { createdAt: "desc" },
@@ -40,6 +37,10 @@ export async function POST(request: Request) {
       return unauthorized("OTP expired. Please request a new one.");
     }
 
+    if (otpRecord.attempts >= 5) {
+      return unauthorized("Too many invalid OTP attempts. Request a new OTP.");
+    }
+
     const incomingHash = hashOtp(email, parsed.data.code);
     if (incomingHash !== otpRecord.codeHash) {
       await prisma.otpRequest.update({
@@ -51,54 +52,46 @@ export async function POST(request: Request) {
       return unauthorized("Invalid OTP code");
     }
 
-    const user = await prisma.user.upsert({
+    const user = await prisma.user.findUnique({
       where: { email },
-      update: {
-        fullName: parsed.data.fullName ?? undefined,
-      },
-      create: {
-        email,
-        fullName: parsed.data.fullName,
-        role: Role.USER,
-      },
-    });
-
-    await prisma.otpRequest.update({
-      where: { id: otpRecord.id },
-      data: {
-        usedAt: new Date(),
-        userId: user.id,
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        phone: true,
+        role: true,
+        passwordHash: true,
       },
     });
 
-    const token = await signSessionToken({
-      sub: user.id,
-      role: user.role,
-      email: user.email,
-      phone: user.phone,
-      fullName: user.fullName,
-    });
+    if (!user?.passwordHash) {
+      return unauthorized("Registration not found. Please register again.");
+    }
 
-    const response = NextResponse.json({
-      ok: true,
-      user: {
-        id: user.id,
-        fullName: user.fullName,
-        email: user.email,
-        phone: user.phone,
-        role: user.role,
-      },
-    });
+    const [updatedUser] = await prisma.$transaction([
+      prisma.user.update({
+        where: { id: user.id },
+        data: { emailVerifiedAt: new Date() },
+        select: {
+          id: true,
+          fullName: true,
+          email: true,
+          phone: true,
+          role: true,
+        },
+      }),
+      prisma.otpRequest.update({
+        where: { id: otpRecord.id },
+        data: {
+          usedAt: new Date(),
+          userId: user.id,
+        },
+      }),
+    ]);
 
-    response.cookies.set({
-      ...sessionCookieOptions(),
-      value: token,
-    });
-
-    return response;
+    return buildSessionResponse(updatedUser);
   } catch (error) {
     console.error(error);
-    return serverError("Unable to verify OTP");
+    return serverError("Unable to verify registration OTP");
   }
 }
-

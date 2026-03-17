@@ -1,19 +1,19 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { generateOtpCode, hashOtp, sendOtpCode } from "@/lib/otp";
 import { badRequest, serverError, tooManyRequests } from "@/lib/http";
+import { generateOtpCode, hashOtp, sendOtpCode } from "@/lib/otp";
+import { prisma } from "@/lib/prisma";
 import { rateLimit, requestIp } from "@/lib/rate-limit";
-import { normalizeEmailIdentifier, otpRequestSchema } from "@/lib/validations/auth";
+import { forgotPasswordRequestSchema, normalizeEmailIdentifier } from "@/lib/validations/auth";
 
 const OTP_TTL_MINUTES = 10;
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const parsed = otpRequestSchema.safeParse(body);
+    const parsed = forgotPasswordRequestSchema.safeParse(body);
 
     if (!parsed.success) {
-      return badRequest("Invalid OTP request", parsed.error.flatten());
+      return badRequest("Invalid forgot password payload", parsed.error.flatten());
     }
 
     let email: string;
@@ -24,9 +24,25 @@ export async function POST(request: Request) {
     }
 
     const ip = requestIp(request);
-    const limiter = rateLimit(`otp:${ip}:${email}`, { limit: 5, windowMs: 10 * 60 * 1000 });
+    const limiter = rateLimit(`forgot-password:${ip}:${email}`, { limit: 5, windowMs: 10 * 60 * 1000 });
     if (limiter.limited) {
       return tooManyRequests(limiter.resetInSeconds, "Too many OTP requests. Try again later.");
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        emailVerifiedAt: true,
+      },
+    });
+
+    if (!user) {
+      return badRequest("No account found with this email. Please register first.");
+    }
+
+    if (!user.emailVerifiedAt) {
+      return badRequest("Email is not verified yet. Complete registration OTP first.");
     }
 
     const code = generateOtpCode();
@@ -36,22 +52,22 @@ export async function POST(request: Request) {
     await prisma.otpRequest.create({
       data: {
         identifier: email,
-        channel: "email",
+        channel: "reset_password",
         codeHash,
         expiresAt,
+        userId: user.id,
       },
     });
 
-    await sendOtpCode({ email, code });
+    await sendOtpCode({ email, code, purpose: "reset_password" });
 
     return NextResponse.json({
       ok: true,
-      message: "OTP sent successfully",
+      message: "OTP sent to your email.",
       devCode: process.env.NODE_ENV === "production" ? undefined : code,
     });
   } catch (error) {
     console.error(error);
-    return serverError("Unable to send OTP");
+    return serverError("Unable to send forgot password OTP");
   }
 }
-

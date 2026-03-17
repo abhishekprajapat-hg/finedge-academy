@@ -15,6 +15,13 @@ export async function GET(_request: Request, context: { params: Promise<{ slug: 
     return NextResponse.json({ ok: false, error: "Not found" }, { status: 404 });
   }
 
-  return NextResponse.json({ ok: true, post });
+  return NextResponse.json(
+    { ok: true, post },
+    {
+      headers: {
+        "Cache-Control": "public, s-maxage=300, stale-while-revalidate=86400",
+      },
+    },
+  );
 }
 

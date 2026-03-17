@@ -3,6 +3,13 @@ import { prisma } from "@/lib/prisma";
 import { SessionPayload, verifySessionToken } from "@/lib/jwt";
 
 export const SESSION_COOKIE = "fin_edu_session";
+export type SessionUser = {
+  id: string;
+  role: "USER" | "ADMIN";
+  email: string | null;
+  phone: string | null;
+  fullName: string | null;
+};
 
 export async function getSessionFromRequest(request: Request): Promise<SessionPayload | null> {
   const cookieHeader = request.headers.get("cookie") ?? "";
@@ -38,6 +45,21 @@ export async function getSessionFromCookies(): Promise<SessionPayload | null> {
   } catch {
     return null;
   }
+}
+
+export async function getSessionUserFromCookies(): Promise<SessionUser | null> {
+  const session = await getSessionFromCookies();
+  if (!session?.sub || !session.role) {
+    return null;
+  }
+
+  return {
+    id: session.sub,
+    role: session.role,
+    email: session.email ?? null,
+    phone: session.phone ?? null,
+    fullName: session.fullName ?? null,
+  };
 }
 
 export async function getCurrentUser() {
